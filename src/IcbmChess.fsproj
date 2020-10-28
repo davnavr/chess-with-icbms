@@ -1,10 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Title>IcbmChess</Title>
+    <RootNamespace>$(Title)</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="App.fs" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Fable.Browser.Dom" Version="1.1.0" />
     <PackageReference Include="Fable.Core" Version="3.1.5" />
