@@ -8,27 +8,23 @@ type Game =
     { Board: Board.Info
       Turn: uint32 }
 
+type NextMove = unit -> MoveResult * Game
+
 type MoveInfo =
-    { Game: Game
-      Moves: Map<Coord, unit -> MoveResult>
+    { Moves: Map<Coord, NextMove>
       Piece: PieceInfo }
 
 type MoveResult =
-    | Ended of
-        {| Game: Game
-           Result: Ended |}
+    | Ended of Ended
     | PlayerToMove of
-        {| Game: Game
-           Moves: Map<Coord, MoveInfo>
-           Resign: unit -> MoveResult
+        {| Moves: Map<Coord, MoveInfo>
+           Resign: NextMove
            Player: Player |}
 
 [<RequireQualifiedAccess>]
 module Game =
     let private resign (resigner: Player) state () =
-        {| Game = state
-           Result = Won resigner.Opponent |}
-        |> Ended
+        Won resigner.Opponent |> Ended, state
 
     let private moves player state =
         state.Board
@@ -45,13 +41,13 @@ module Game =
 
     let private playerMove player state =
         let available = moves player state
-        {| Game = state
-           Moves = invalidOp "bad"
+        {| Moves = invalidOp "bad"
            Resign = resign player state
            Player = player |}
-        |> PlayerToMove
+        |> PlayerToMove,
+        state
 
-    let start(): MoveResult =
+    let start(): MoveResult * Game =
         let state =
             { Board = Board.init()
               Turn = 0u }
