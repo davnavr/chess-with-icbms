@@ -1,0 +1,44 @@
+﻿
+html, body {
+  font-family: Arial;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.game {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.board {
+  position: absolute;
+}
+
+.board__rank {
+}
+
+  .board__rank:nth-child(odd) .board__square:nth-child(odd) button,
+  .board__rank:nth-child(even) .board__square:nth-child(even) button {
+    background: Tan;
+  }
+
+  .board__rank:nth-child(odd) .board__square:nth-child(even) button,
+  .board__rank:nth-child(even) .board__square:nth-child(odd) button {
+    background: Chocolate;
+  }
+
+/* TODO: Have width and height of square be based on width and height of window */
+.board__square {
+  width: 100px;
+  height: 100px;
+}
+
+.board__square button {
+  width: 100%;
+  height: 100%;
+}
