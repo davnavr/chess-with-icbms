@@ -29,7 +29,7 @@ module Game =
     let private moves player state =
         state.Board
         |> Board.pieces
-        |> List.choose
+        |> Seq.choose
             (function
             | pos, piece when piece.Owner = player ->
                 match piece.Type with
@@ -37,11 +37,11 @@ module Game =
                 | _ -> []
                 |> Some
             | _ -> None)
-        |> List.collect id
+        |> Seq.collect id
 
     let private playerMove player state =
         let available = moves player state
-        {| Moves = invalidOp "bad"
+        {| Moves = Map.empty // TODO: Put all available moves in this map.
            Resign = resign player state
            Player = player |}
         |> PlayerToMove,

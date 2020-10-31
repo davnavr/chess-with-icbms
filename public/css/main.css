@@ -34,8 +34,8 @@ html, body {
 
 /* TODO: Have width and height of square be based on width and height of window */
 .board__square {
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  height: 50px;
 }
 
 .board__square button {

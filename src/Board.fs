@@ -100,8 +100,8 @@ module Board =
             Array.init
                 8
                 (function
-                | 8 -> start Black
-                | 7 -> pawns Black
+                | 7 -> start Black
+                | 6 -> pawns Black
                 | 1 -> start White
                 | 2 -> pawns White
                 | _ -> emptyFile)
@@ -112,16 +112,24 @@ module Board =
         |> Array.item (int rank)
         |> Map.find file
 
-    let pieces (Board board) =
+    let toSeq (Board board) =
         board
+        |> Seq.ofArray
         |> Seq.mapi
             (fun rank files ->
                 let rank' = uint8 rank |> Rank
-                Map.toSeq files
-                |> Seq.choose
-                    (fun (file, piece) ->
-                        Option.map
-                            (fun piece' -> Coord(file, rank'), piece')
-                            piece))
-        |> Seq.collect id
-        |> List.ofSeq
+                let files' = Map.toList files
+                List.map
+                    (fun (file, piece) -> Coord(file, rank'), piece)
+                    files')
+
+    let pieces =
+        let files =
+            List.choose
+                (fun (pos, piece) ->
+                    Option.map
+                        (fun piece' -> pos, piece')
+                        piece)
+        toSeq
+        >> Seq.map files
+        >> Seq.collect id
