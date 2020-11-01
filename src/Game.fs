@@ -12,7 +12,7 @@ type NextMove = unit -> MoveResult * Game
 
 type MoveInfo =
     { Moves: Map<Coord, NextMove>
-      Piece: PieceInfo }
+      Piece: Piece }
 
 type MoveResult =
     | Ended of Ended

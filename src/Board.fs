@@ -40,12 +40,11 @@ type Coord =
     | Coord of File * Rank
 
     override this.ToString() =
-        let (Coord(file, Rank rank)) = this
+        let (Coord(file, rank)) = this
         let file' = file.ToString().ToLower()
         sprintf "%s%O" file' rank
 
-[<RequireQualifiedAccess>]
-type Piece =
+type PieceType =
     | King
     | Queen
     | Rook
@@ -53,20 +52,37 @@ type Piece =
     | Knight
     | Pawn
 
-type PieceType =
-    | NormalPiece of Piece
-    /// Can't move, but can launch and defend against ICBMs
-    | NukePiece of Piece * nukes: uint32
-
-type PieceInfo =
-    { Owner: Player
+type Piece =
+    { Nukes: uint32
+      Owner: Player
       Type: PieceType }
+
+    override this.ToString() =
+        let owner =
+            match this.Owner with
+            | White -> 0
+            | Black -> 6
+        let piece =
+            let code =
+                match this.Type with
+                | King -> 0x2654
+                | Queen -> 0x2655
+                | Rook -> 0x2656
+                | Bishop -> 0x2657
+                | Knight -> 0x2658
+                | Pawn -> 0x2659
+            code + owner |> sprintf "&#x%X"
+        let nuke =
+            match this.Nukes with
+            | 0u -> ""
+            | _ -> sprintf "&#x1F680 %i" this.Nukes
+        sprintf "%s%s" piece nuke
 
 [<RequireQualifiedAccess>]
 module Board =
     type Info =
         private
-        | Board of Map<File, PieceInfo option>[]
+        | Board of Map<File, Piece option>[]
 
     let init =
         let files = [ A; B; C; D; E; F; G; H ]
@@ -77,33 +93,34 @@ module Board =
         let rank owner =
             List.map
                 (fun ptype ->
-                    { Owner = owner
-                      Type = NormalPiece ptype }
+                    { Nukes = 0u
+                      Owner = owner
+                      Type = ptype }
                     |> Some)
             >> List.zip files
             >> Map.ofList
         let start owner =
             [
-                Piece.Rook
-                Piece.Knight
-                Piece.Bishop
-                Piece.Queen
-                Piece.King
-                Piece.Bishop
-                Piece.Knight
-                Piece.Rook
+                Rook
+                Knight
+                Bishop
+                Queen
+                King
+                Bishop
+                Knight
+                Rook
             ]
             |> rank owner
         let pawns owner =
-            List.replicate 8 Piece.Pawn |> rank owner
+            List.replicate 8 Pawn |> rank owner
         fun() ->
             Array.init
                 8
                 (function
                 | 7 -> start Black
                 | 6 -> pawns Black
-                | 1 -> start White
-                | 2 -> pawns White
+                | 0 -> start White
+                | 1 -> pawns White
                 | _ -> emptyFile)
             |> Board
 
@@ -122,6 +139,7 @@ module Board =
                 List.map
                     (fun (file, piece) -> Coord(file, rank'), piece)
                     files')
+        |> Seq.rev
 
     let pieces =
         let files =

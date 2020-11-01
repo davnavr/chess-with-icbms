@@ -20,7 +20,7 @@ let view (game: Game) (disp: Dispatch<MoveResult>) =
 
     boardElem.innerHTML <- "" // TODO: Find better way to remove all child nodes.
 
-    for files in board do // TODO: Figure out why the grid is duplicated twice.
+    for files in board do
         let fileElem =
             document.createElement("tr")
             |> boardElem.appendChild
@@ -28,7 +28,7 @@ let view (game: Game) (disp: Dispatch<MoveResult>) =
 
         fileElem.classList.add "board__rank"
 
-        for (pos, _) in files do
+        for (pos, piece) in files do
             let squareElem =
                 document.createElement("td")
                 |> fileElem.appendChild
@@ -38,7 +38,10 @@ let view (game: Game) (disp: Dispatch<MoveResult>) =
                 |> squareElem.appendChild
                 :?> Element
 
-            buttonElem.innerHTML <- string pos
+            match piece with
+            | Some piece -> buttonElem.innerHTML <- string piece
+            | None -> buttonElem.innerHTML <- string pos
+
             squareElem.classList.add "board__square"
     ()
 
